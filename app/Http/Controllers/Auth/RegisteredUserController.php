@@ -27,17 +27,24 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'age' => ['required', 'integer', 'min:1', 'max:120'],  // Validación de edad
+            'sex' => ['required', 'in:M,F,X'],  // Validación de sexo
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Crear el usuario y guardar la edad
         $user = User::create([
             'name' => $request->name,
+            'age' => $request->age,  // Asegúrate de pasar el valor de edad
+            'sex' => $request->sex,  // Asegúrate de pasar el valor de sexo
             'email' => $request->email,
+            'rango' => 0,
             'password' => Hash::make($request->password),
         ]);
 
@@ -45,6 +52,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('dashboard'));
     }
+
 }

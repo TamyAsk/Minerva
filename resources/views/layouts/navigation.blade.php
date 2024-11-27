@@ -6,15 +6,29 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <img src="{{ asset('img/logo_lechuza.webp') }}" alt="Logo" style="width: 50px; height: auto; border-radius: 10px;">
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        {{ __('Libreria') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('crear_libros')" :active="request()->routeIs('crear_libros')">
+                        {{ __('Crear un libro') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('mis_libros')" :active="request()->routeIs('mis_libros')">
+                        {{ __('Mis libros') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('fav.libros')" :active="request()->routeIs('fav.libros')">
+                        {{ __('Favoritos') }}
+                    </x-nav-link>
+                    @if (auth()->user()->rango)
+                    <x-nav-link :href="route('categorias.form')" :active="request()->routeIs('categorias.form')">
+                        {{ __('Crear categoría') }}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
 

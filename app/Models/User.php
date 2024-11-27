@@ -19,7 +19,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'age',
+        'sex',
         'password',
+        'rango',
     ];
 
     /**
@@ -44,4 +47,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function librosLikes()
+    {
+        return $this->belongsToMany(Libro::class, 'usuario_libro_like', 'usuario_id', 'fk_libros');
+    }
+
+    public function librosVerDespues()
+    {
+        return $this->belongsToMany(Libro::class, 'usuario_libro_ver_despues', 'usuario_id', 'fk_libros');
+    }
+
+    public function librosVistos()
+    {
+        return $this->belongsToMany(Libro::class, 'usuario_libro_vistos', 'usuario_id', 'fk_libros');
+    }
+
+    
+    
 }
