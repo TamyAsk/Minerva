@@ -62,44 +62,50 @@ class LibroController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'titulo' => 'required|string|max:255',
-            'introduccion' => 'required|string|max:1000',
-            'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'contenido' => 'required|string',
-            'estatus' => 'required|integer|max:2',
-            'fk_categoria_libros' => 'required|array|min:1|max:3', // Validar arreglo de categorías
-            'fk_categoria_libros.*' => 'nullable|exists:categoria_libros,pk_categoria_libros', // Validar cada categoría
-        ]);
+{
+    $request->validate([
+        'titulo' => 'required|string|max:255',
+        'introduccion' => 'required|string|max:1000',
+        'portada' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Cambiado a nullable
+        'contenido' => 'required|string',
+        'estatus' => 'required|integer|max:2',
+        'fk_categoria_libros' => 'required|array|min:1|max:3', // Validar arreglo de categorías
+        'fk_categoria_libros.*' => 'nullable|exists:categoria_libros,pk_categoria_libros', // Validar cada categoría
+    ]);
 
-        // Procesar la portada
+    // Procesar la portada
+    if ($request->hasFile('portada')) {
         $filename = time() . '_' . $request->file('portada')->getClientOriginalName();
         $request->file('portada')->move(public_path('portadas'), $filename);
-
-        // Crear el libro
-        $libro = Libro::create([
-            'titulo' => $request->titulo,
-            'usuario_id' => Auth::id(),
-            'introduccion' => $request->introduccion,
-            'portada' => 'Laravel/public/portadas/' . $filename,
-            'contenido' => $request->contenido,
-            'estatus' => $request->estatus,
-            'publico_edad' => $request->publico_edad
-        ]);
-
-        // Asignar las categorías al libro
-        foreach ($request->fk_categoria_libros as $categoria_id) {
-            if (!empty($categoria_id)) {
-                categoria_as_Libros::create([
-                    'fk_libros' => $libro->pk_libros,
-                    'fk_categoria_libros' => $categoria_id,
-                ]);
-            }
-        }
-
-        return redirect()->route('mis_libros')->with('success', 'Libro creado exitosamente');
+        $portadaPath = 'Laravel/public/portadas/' . $filename;
+    } else {
+        $portadaPath = 'Laravel/public/portadas/Portada_ejemplo.jpg'; // Imagen predeterminada
     }
+
+    // Crear el libro
+    $libro = Libro::create([
+        'titulo' => $request->titulo,
+        'usuario_id' => Auth::id(),
+        'introduccion' => $request->introduccion,
+        'portada' => $portadaPath,
+        'contenido' => $request->contenido,
+        'estatus' => $request->estatus,
+        'publico_edad' => $request->publico_edad
+    ]);
+
+    // Asignar las categorías al libro
+    foreach ($request->fk_categoria_libros as $categoria_id) {
+        if (!empty($categoria_id)) {
+            categoria_as_Libros::create([
+                'fk_libros' => $libro->pk_libros,
+                'fk_categoria_libros' => $categoria_id,
+            ]);
+        }
+    }
+
+    return redirect()->route('mis_libros')->with('success', 'Libro creado exitosamente');
+}
+
 
     public function edit($id)
     {
