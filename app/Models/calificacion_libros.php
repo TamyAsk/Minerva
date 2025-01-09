@@ -25,4 +25,5 @@ class calificacion_libros extends Model
         return $this->belongsTo(User::class);
     }
     
+    
 }

@@ -54,12 +54,22 @@ class LibroController extends Controller
             return view('dashboard', compact('libros', 'categorias', 'categoriaSeleccionada'));
         }
 
-    public function show_my_books()
-    {
-        $userId = Auth::id();
-        $libros = Libro::where('usuario_id', $userId)->get();
-        return view('mis_libros', ['libros' => $libros]);
-    }
+        public function show_my_books()
+        {
+            $user = Auth::user(); // Obtener al usuario autenticado
+        
+            // Verificar el rango del usuario
+            if ($user->rango == 1) {
+                // Si el usuario es administrador, mostrar todos los libros
+                $libros = Libro::all();
+            } else {
+                // Si el usuario no es administrador, mostrar solo sus libros
+                $libros = Libro::where('usuario_id', $user->id)->get();
+            }
+        
+            return view('mis_libros', ['libros' => $libros]);
+        }
+        
 
     public function store(Request $request)
 {
@@ -77,9 +87,9 @@ class LibroController extends Controller
     if ($request->hasFile('portada')) {
         $filename = time() . '_' . $request->file('portada')->getClientOriginalName();
         $request->file('portada')->move(public_path('portadas'), $filename);
-        $portadaPath = 'Laravel/public/portadas/' . $filename;
+        $portadaPath = 'portadas/' . $filename;
     } else {
-        $portadaPath = 'Laravel/public/portadas/Portada_ejemplo.jpg'; // Imagen predeterminada
+        $portadaPath = 'portadas/Portada_ejemplo.jpg'; // Imagen predeterminada
     }
 
     // Crear el libro
@@ -135,7 +145,7 @@ class LibroController extends Controller
         if ($request->hasFile('portada')) {
             $filename = $request->file('portada')->getClientOriginalName();
             $request->file('portada')->move(public_path('portadas'), $filename);
-            $libro->portada = 'Laravel/public/portadas/' . $filename;
+            $libro->portada = 'portadas/' . $filename;
         }
     
         $libro->save();
@@ -181,22 +191,22 @@ class LibroController extends Controller
         return redirect()->route('mis_libros')->with('success', 'Libro publicado exitosamente!');
     }
 
-    public function buscar_id(Request $request, $id)
-    {
-        $libro = Libro::find($id);
-        $usuario = Auth::user();
-        
-        // Verifica si el libro está en la lista de likes del usuario
-        $tieneLike = $usuario->librosLikes->contains($libro);
-        
-        // Verifica si el libro está en la lista de "ver después" del usuario
-        $tieneVerDespues = $usuario->librosVerDespues->contains($libro);
-        
-        // Verifica si el libro está en la lista de "visto" del usuario
-        $tieneVisto = $usuario->librosVistos->contains($libro);
+public function buscar_id(Request $request, $id)
+{
+    $libro = Libro::with(['comentarios', 'calificaciones'])->findOrFail($id);
+    $usuario = Auth::user();
     
-        return view('mostrar_libro', compact('libro', 'tieneLike', 'tieneVerDespues', 'tieneVisto'));
-    }
+    // Verifica si el usuario ha interactuado con el libro
+    $tieneLike = $usuario->librosLikes->contains($libro);
+    $tieneVerDespues = $usuario->librosVerDespues->contains($libro);
+    $tieneVisto = $usuario->librosVistos->contains($libro);
+
+    // Calcula el promedio de las calificaciones
+    $promedioCalificacion = $libro->calificaciones->avg('calificacion');
+
+    return view('mostrar_libro', compact('libro', 'tieneLike', 'tieneVerDespues', 'tieneVisto', 'promedioCalificacion'));
+}
+
     
     public function buscar_id_leer(Request $request,$id){
 

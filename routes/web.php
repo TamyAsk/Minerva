@@ -35,6 +35,7 @@ Route::post('/favoritos/{id}', [UsuarioLibroLikeController::class, 'store'])->na
 Route::post('/libro/{id}/ver-despues', [UsuarioLibroLikeController::class, 'guardarVerDespues'])->name('ver_despues');
 Route::post('/libro/{id}/visto', [UsuarioLibroLikeController::class, 'guardarVisto'])->name('visto');
 
+Route::delete('/libro/{id}/eliminar-calificacion', [LibroController::class, 'eliminarCalificacion'])->name('libro.eliminar_calificacion');
 
 //categoria
 

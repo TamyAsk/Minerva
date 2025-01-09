@@ -41,5 +41,9 @@ class Libro extends Model
         return $this->hasMany(usuario_coment_libros::class, 'fk_libros');
     }
 
-    
+    public function calificaciones()
+    {
+        return $this->hasMany(calificacion_libros::class, 'fk_libros');
+    }
+
 }

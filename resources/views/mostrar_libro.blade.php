@@ -17,9 +17,9 @@
         </x-slot>
 
         <div class="max-w-7xl mx-auto py-12 flex">
-            <img src="{{ asset($libro->portada) }}" alt="{{ $libro->titulo }}" style="width: 230px; height: 340px">
+            <img src="{{ asset($libro->portada) }}" alt="{{ $libro->titulo }}" style="width: 230px; height: 340px; border-radius:5px">
             
-            <div class="px-6">
+            <div class="px-6 " style="width:75%">
                 <p>{{ $libro->introduccion }}</p>
                 <br>
                 <div class="icon-container">
@@ -65,7 +65,10 @@
                             <a href="{{route('calificarlibro',['id' => $libro->pk_libros,'valor' => 4])}}"><i class="fa-regular fa-star star" data-value="4"></i></a>
                             <a href="{{route('calificarlibro',['id' => $libro->pk_libros,'valor' => 5])}}"><i class="fa-regular fa-star star" data-value="5"></i></a>
                         </div>
-                    
+                        <div class="calificacion-promedio">
+                            <p>(     {{ number_format($promedioCalificacion, 2) ?? 'Sin calificaciones aún' }} <i class="fa-solid fa-star" style="color:gold"></i>)</p>
+                        </div>
+                        
                     </div>
                 
 

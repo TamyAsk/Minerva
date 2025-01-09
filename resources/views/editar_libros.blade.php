@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="portada" class="block font-medium text-sm text-gray-700">Portada</label>
+                            <label for="portada" class="block font-medium text-sm text-gray-700">Portada (195px,340px)</label>
                             <input type="file" id="portada" name="portada" class="form-input rounded-md shadow-sm mt-1 block w-full">
                         </div>
 
